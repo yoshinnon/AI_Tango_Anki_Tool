@@ -65,10 +65,43 @@ python --version
 pip install streamlit google-genai edge-tts pandas
 ```
 
+Windowsの場合、pip環境にstreamlitをインストールしてもstreamlit.exeへのPATHが登録されていないため、`streamlit`コマンドがすぐには使えません。
+
+```bash
+>streamlit
+'streamlit' は、内部コマンドまたは外部コマンド、
+操作可能なプログラムまたはバッチ ファイルとして認識されていません。
+```
+
+そのため、streamlit.exeの場所をシステム環境変数（PATH）に登録します。
+streamlitの場所を調べるために、アンインストールコマンドを実行してキャンセルします。
+
+```
+>pip uninstall streamlit
+Found existing installation: streamlit 1.55.0
+Uninstalling streamlit-1.55.0:
+  Would remove:
+    c:\users\＜ユーザー名＞\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\scripts\streamlit.exe
+  ~~~
+
+Proceed (Y/n)? n
+```
+※上記の場合、PATHに新規登録するのは`c:\users\＜ユーザー名＞\appdata\local\packages\pythonsoftwarefoundation.python.3.13_qbz5n2kfra8p0\localcache\local-packages\python313\scripts`になります。
+
+登録後、新規でターミナル（PowerShell または コマンドプロンプト）を開き、以下のコマンドを実行します。
+
+```
+streamlit hello
+```
+
+ブラウザが起動しでもアプリが表示されれば成功です（終了時はコマンドウインドウでCtrl + C）。
+
+
 ### 3. アプリの起動
 ターミナル（PowerShell等）で本スクリプトのフォルダへ移動し、以下のコマンドを入力します。
 
 ```bash
+cd ＜フォルダパス＞
 streamlit run app.py
 ```
 
