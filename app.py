@@ -343,6 +343,15 @@ def generate_words_by_theme(theme, word_count, phrase_count):
             continue
     return []
 
+def sanitize_filename(filename):
+    """
+    ファイル名に使用できない文字を '_' に置換する
+    Windowsの禁止文字: '\\ / : * ? " < > |'
+    """
+    # Windowsで禁止されている文字を正規表現で指定
+    # [\\/:*?"<>|] にマッチする文字を "_" に変える
+    return re.sub(r'[\\/:*?"<>|]', '_', filename)
+
 def process_and_save_words(word_list, deck_name):
     """詳細情報を生成し、指定したデッキに保存する共通ロジック"""
     deck_path = os.path.join(BASE_CSV_DIR, deck_name)
@@ -359,14 +368,7 @@ def process_and_save_words(word_list, deck_name):
                 raw_word = data['word'].strip()
     
                 # 【小文字化ロジック】
-                # 固有名詞（2文字目以降に大文字がある、例: iPhone, NASA）は維持し、
-                # 単に文頭だけが大文字のもの（例: Apple, Run）を小文字にする判定
                 if raw_word[0].isupper() and (len(raw_word) == 1 or raw_word[1:].islower()):
-                    # ただし、固有名詞の可能性が高い単語（国名など）を除外したい場合はここで条件追加
-                    # 簡易的には、一律 lower() せず、AIの指示に任せつつ、
-                    # 明らかに普通名詞っぽいものだけ処理するか、一律 lower() するか選びます。
-
-                    # 今回は「普通名詞・動詞は小文字」を優先するため、一律小文字化を適用
                     data['word'] = raw_word.lower()
                 else:
                     data['word'] = raw_word
@@ -376,13 +378,18 @@ def process_and_save_words(word_list, deck_name):
                 # 重複ファイルの削除
                 for f in current_files:
                     try:
-                        check_df = pd.read_csv(os.path.join(deck_path, f))
-                        if str(check_df.iloc[0]['word']).strip().lower() == target_word_lower:
-                            os.remove(os.path.join(deck_path, f))
+                        file_full_path = os.path.join(deck_path, f)
+                        if os.path.exists(file_full_path):
+                            check_df = pd.read_csv(file_full_path)
+                            if str(check_df.iloc[0]['word']).strip().lower() == target_word_lower:
+                                os.remove(file_full_path)
                     except: pass
 
-                # 保存
-                word_label = data['word'].replace(' ','_').replace('/','_')
+                # --- 保存ファイル名の禁則処理 ---
+                # 1. スペースをアンダースコアに置換
+                word_label = data['word'].replace(' ', '_')
+                # 2. OSの禁止文字（?や:など）を安全な文字に置換
+                word_label = sanitize_filename(word_label)
                 ts = datetime.now().strftime('%Y%m%d%H%M%S%f')
                 new_fn = f"{word_label}_{ts}.csv"
                 pd.DataFrame([data]).to_csv(os.path.join(deck_path, new_fn), index=False, encoding="utf-8-sig")
@@ -516,7 +523,10 @@ def main():
                 c1, c2 = st.columns(2)
                 if c1.button("✅ この内容で保存", type="primary", use_container_width=True):
                     deck_path = os.path.join(BASE_CSV_DIR, current_deck)
+                    # 1. スペースをアンダースコアに置換
                     word_label = data['word'].replace(' ', '_')
+                    # 2. 【ここを追加！】OS禁止文字（?や:など）を安全な文字に置換
+                    word_label = sanitize_filename(word_label)
                     ts = datetime.now().strftime('%Y%m%d%H%M%S%f')
                     new_fn = f"{word_label}_{ts}.csv"
 
