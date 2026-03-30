@@ -32,12 +32,12 @@ def apply_custom_css():
     """, unsafe_allow_html=True)
 
 def load_api_key():
-    """GOOGLE_API_KEYファイルからキーを読み取る"""
+    """GEMINI_API_KEYファイルからキーを読み取る"""
     try:
-        with open("GOOGLE_API_KEY", "r", encoding="utf-8") as f:
+        with open("GEMINI_API_KEY", "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
-        st.error("エラー: 'GOOGLE_API_KEY' ファイルが同フォルダ内に見つかりません。")
+        st.error("エラー: 'GEMINI_API_KEY' ファイルが同フォルダ内に見つかりません。")
         return None
 
 GEMINI_API_KEY = load_api_key()
