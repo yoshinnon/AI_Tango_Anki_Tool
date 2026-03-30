@@ -434,12 +434,12 @@ def get_stats_data(deck_name):
 # 3. メイン UI
 # ==========================================
 def main():
-    st.set_page_config(page_title="AI Anki Tool", layout="wide", page_icon="🚀")
+    st.set_page_config(page_title="AI Tango Anki Tool", layout="wide", page_icon="🚀")
     apply_custom_css()
     
     if "current_mode" not in st.session_state: st.session_state.current_mode = "単語登録"
     
-    st.sidebar.title("🚀 AI Anki Tool")
+    st.sidebar.title("🚀 AI Tango Anki Tool")
 
     # 初期値の設定（エラー防止）
     if "current_mode" not in st.session_state:
