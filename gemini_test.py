@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 
 # 1. 外部ファイルからAPIキーを読み込む
-key_file = "GOOGLE_API_KEY"
+key_file = "GEMINI_API_KEY"
 
 try:
     if os.path.exists(key_file):
